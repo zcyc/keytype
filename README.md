@@ -1,93 +1,145 @@
 # KeyType
 
-Native macOS menu bar app for secure credential Auto-Type.
+<p align="center">
+  <img src="docs/images/keytype-icon.png" alt="KeyType icon" width="128">
+</p>
+
+Secure credential Auto-Type for macOS, available from the menu bar.
 
 > 简体中文：[README.zh-CN.md](README.zh-CN.md)
 
-KeyType stores credential metadata and passwords in separate macOS login Keychain items. Browsing the picker never reads password data; a password is fetched only when an Auto-Type sequence needs it.
+KeyType keeps credential metadata and passwords in separate items in the macOS login Keychain. Passwords are read only when an Auto-Type sequence needs them and are never copied to the clipboard.
+
+## Features
+
+- Native menu bar workflow with a keyboard-first credential picker.
+- Optional window-title matching to rank the most likely credentials.
+- Editable Auto-Type presets and custom sequences.
+- Global shortcut recording with a reset button; the shortcut is consumed by KeyType instead of the active app.
+- Optional Launch at Login using macOS `SMAppService`.
+- No network requests, browser extension, telemetry, or clipboard transport.
+
+## Screenshot
+
+### Add Credential
+
+<p align="center">
+  <img src="docs/images/add-credential.png" alt="KeyType Add Credential window" width="560">
+</p>
 
 ## Requirements
 
-- macOS 13 or later
-- Swift 6 toolchain
-- Full Xcode is required for XCTest
+- macOS 13 or later.
+- `make`, Swift, and `codesign` (the macOS Command Line Tools are enough to install and run the app).
+- Full Xcode is optional and is only needed for XCTest.
 
-## Quick start
+## Install
 
-Install to `~/Applications/KeyType.app`:
+From the project directory, run:
 
 ```sh
 make install
+open ~/Applications/KeyType.app
 ```
 
-Install to another directory:
+`make install` builds the app, assembles the app bundle when necessary, signs it ad hoc for local use, and installs it to `~/Applications/KeyType.app`.
+
+Useful commands:
 
 ```sh
+make build                         # Build build/KeyType.app
+make install                       # Build and install the app
+make run                           # Build, install, and launch the app
 make install INSTALL_DIR=/Applications
+make test                          # Run XCTest; requires full Xcode
+make clean                         # Remove build artifacts
 ```
 
-Install and launch:
+When full Xcode is available, the Makefile builds `KeyType.xcodeproj`. Otherwise it uses the SwiftPM fallback and still produces the same locally signed app bundle.
 
-```sh
-make run
+## First use
+
+1. Launch KeyType from `~/Applications/KeyType.app`.
+2. Choose **Add Credential** and enter a title, username, and password. The title is also the credential’s display name.
+3. Optionally set **Window title contains** to improve matching for a particular application or login page.
+4. Keep the default **Password + Enter** preset, choose another preset, or edit the sequence directly.
+5. Press the default shortcut `⌥⌘K`, select a credential, and press Return to start Auto-Type.
+
+When editing an existing credential, leave the password field empty to keep the current password. Enter a new value to replace it.
+
+## Matching and selection
+
+When the picker opens, KeyType captures the current frontmost application and window title when macOS makes that information available. It then ranks credentials using the target window, the optional window-title rule, and the credential title.
+
+The search field filters by credential title or username. It does not hide the other saved credentials when no search text is entered, so multiple candidates can be reviewed manually. Use ↑/↓ to select a row, Return to confirm, or Escape to cancel.
+
+Before typing, KeyType verifies that the original target application is still frontmost. If focus changed, Auto-Type stops instead of typing into the wrong application.
+
+## Auto-Type sequences
+
+Sequences are made from these tokens:
+
+| Token | Action |
+| --- | --- |
+| `{USERNAME}` | Type the username |
+| `{PASSWORD}` | Read and type the password |
+| `{TAB}` | Press Tab |
+| `{ENTER}` | Press Return |
+| `{DELAY 500}` | Wait 500 ms; values from 0 to 30,000 ms are supported |
+
+Examples:
+
+```text
+{PASSWORD}{ENTER}
+{USERNAME}{TAB}{PASSWORD}{ENTER}
+{USERNAME}{ENTER}{DELAY 500}{PASSWORD}{ENTER}
 ```
 
-Select a specific Xcode installation when needed:
+For a new credential, the preset defaults to **Password + Enter** (`{PASSWORD}{ENTER}`). Selecting a preset replaces the sequence with that preset’s value. Editing the sequence changes the preset to **Custom**.
 
-```sh
-make install DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-```
+## Keyboard shortcut
 
-The Makefile uses the checked-in `KeyType.xcodeproj` when full Xcode is available. Without full Xcode, it builds the SwiftPM executable, assembles a minimal app bundle, and signs it ad hoc for local use.
+The default shortcut is `⌥⌘K`. To change it, open **Settings**, click the shortcut control, and press at least one modifier key plus a key. Use the reset icon to restore the default.
 
-Useful targets:
+The shortcut is registered natively with macOS and is consumed by KeyType, so it should not also trigger actions such as printing in a browser. If the selected combination is already in use, choose another combination.
 
-```sh
-make build    # Build build/KeyType.app
-make install  # Install the app
-make run      # Install and launch the app
-make test     # Run XCTest; requires full Xcode
-make clean    # Remove build artifacts
-```
+## Permissions and security
 
-## Signing and Launch at Login
+Auto-Type requires Accessibility access. The global shortcut and opening the picker do not require this permission.
 
-The app uses `SMAppService.mainApp` for Launch at Login. The Makefile signs the app ad hoc (`CODE_SIGN_IDENTITY=-`), which is the intended way to run KeyType locally. Run `make install`, then launch `~/Applications/KeyType.app`.
-
-## Permissions
-
-App Sandbox is intentionally disabled in `KeyType/Support/KeyType.entitlements`. Auto-Type requires user-approved Accessibility access:
+Enable it in:
 
 **System Settings → Privacy & Security → Accessibility**
 
-KeyType requests this permission only when needed. It uses Accessibility APIs to inspect the focused window, installs a global `CGEventTap`, and posts keyboard events. The app has no network capability.
+KeyType uses Accessibility APIs to inspect the focused window, restore focus, verify the target, and send keyboard events. App Sandbox is intentionally disabled because this is a local menu bar utility.
 
-## Security decisions
+Credentials are stored as two separate login Keychain items:
 
-- Metadata and passwords are separate `kSecClassGenericPassword` items under `com.keytype.app.metadata` and `com.keytype.app.password`.
-- Both items use the credential UUID as `kSecAttrAccount` and are stored in the user's login Keychain.
-- The login Keychain protects items with the user's macOS account; this ad-hoc build does not synchronize credentials across devices.
-- Passwords are fetched only while executing `{PASSWORD}`. They are not kept in picker state, UserDefaults, SwiftData, logs, or the clipboard.
-- Writes use `SecItemUpdate`; create and update failures roll back the related Keychain item when possible.
-- The picker records the target process before authentication, restores it afterward, and aborts if the frontmost process changed before typing.
-- Auto-Type is one cancellable task. A second trigger is ignored while it is active, and Escape requests cancellation when global event monitoring is available.
+- Metadata: `com.keytype.app.metadata`
+- Password: `com.keytype.app.password`
 
-## Current limitations
+The password is fetched only at the `{PASSWORD}` step. It is not stored in picker state, UserDefaults, SwiftData, logs, or the clipboard. KeyType has no network capability.
 
-- The global hotkey defaults to `⌥⌘K` and can be changed in Settings. The selected combination is consumed by KeyType so it does not reach the active app.
-- Matching uses a simple window-title rule plus ranking.
-- The picker requires Return confirmation.
-- Unicode input uses `CGEvent.keyboardSetUnicodeString`; applications that ignore Unicode payloads or enforce their own input method may behave differently.
-- There is no browser extension, clipboard transport, Passwords.app extraction, telemetry, external network request, TOTP, passkey, shell execution, or private API.
+## Troubleshooting
 
-## Manual verification
+### “Unable to identify the target application.”
 
-After launching the app and granting Accessibility access, verify:
+Grant KeyType Accessibility access, keep the intended application frontmost, and retry. This check prevents credentials from being typed into a different application.
 
-1. Add `prod-db-01`, username `root`, a password, and `{USERNAME}{ENTER}{DELAY 500}{PASSWORD}{ENTER}`. Quit and reopen the app; metadata should remain available.
-2. At `login:` in Terminal.app or a Web Terminal, press the configured shortcut (default `⌥⌘K`), select the credential, authenticate, and verify username → Return → 500 ms → password → Return.
-3. In a normal login form, use `{USERNAME}{TAB}{PASSWORD}{ENTER}`.
-4. In Settings, click the hotkey button and record another modifier + key combination; verify it persists after restart and does not trigger browser actions. Also test Safari, Chrome, iTerm2, xterm.js/Guacamole, special-character and Unicode passwords, Escape, repeated hotkeys, target switching, revoked Accessibility access, failed or cancelled authentication, missing Keychain passwords, and deleted credentials.
-5. Confirm the clipboard is unchanged before and after every run.
+### The shortcut does not work
 
-Unit tests are in `Tests/KeyTypeCoreTests`. Run them with Xcode because XCTest is not provided by the Command Line Tools-only setup used for the SwiftPM fallback.
+Open **Settings**, record a new modifier + key combination, and make sure no other app owns it. The reset icon restores `⌥⌘K`.
+
+### Keychain errors
+
+Launch the installed bundle at `~/Applications/KeyType.app` instead of a raw executable under `.build/`, then retry. KeyType stores data in the current user’s login Keychain.
+
+## Development
+
+```sh
+make build
+make test    # Requires full Xcode
+make clean
+```
+
+Unit tests are in [`Tests/KeyTypeCoreTests`](Tests/KeyTypeCoreTests). A typical manual check is to add a credential, use it in Terminal or a browser login form, restart KeyType, and confirm that the credential and custom sequence remain available.

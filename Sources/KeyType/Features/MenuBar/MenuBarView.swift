@@ -15,19 +15,47 @@ private struct MenuBarButtonStyle: ButtonStyle {
     }
 }
 
+private struct MenuBarAction: View {
+    let title: String
+    let systemImage: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .frame(width: 18)
+                    .foregroundStyle(.secondary)
+                Text(title)
+            }
+        }
+    }
+}
+
 struct MenuBarView: View {
     @ObservedObject var state: AppState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Button("Search Credential") { state.openPickerFromCurrentContext() }
-            Button("Add Credential") { state.addCredential() }
-            Button("Manage Credentials") { state.manageCredentials() }
+            MenuBarAction(title: "Search Credential", systemImage: "magnifyingglass") {
+                state.openPickerFromCurrentContext()
+            }
+            MenuBarAction(title: "Add Credential", systemImage: "plus.circle") {
+                state.addCredential()
+            }
+            MenuBarAction(title: "Manage Credentials", systemImage: "list.bullet.rectangle") {
+                state.manageCredentials()
+            }
             Divider()
-            Button(state.isAutoTyping ? "Cancel Auto-Type" : "Lock") {
+            MenuBarAction(
+                title: state.isAutoTyping ? "Cancel Auto-Type" : "Lock",
+                systemImage: state.isAutoTyping ? "xmark.circle" : "lock.fill"
+            ) {
                 state.isAutoTyping ? state.cancelAutoType() : state.lock()
             }
-            Button("Settings") { state.openSettings() }
+            MenuBarAction(title: "Settings", systemImage: "gearshape") {
+                state.openSettings()
+            }
             Divider()
             if let message = state.message {
                 Text(message)
@@ -35,7 +63,9 @@ struct MenuBarView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
             }
-            Button("Quit") { NSApplication.shared.terminate(nil) }
+            MenuBarAction(title: "Quit", systemImage: "power") {
+                NSApplication.shared.terminate(nil)
+            }
         }
         .buttonStyle(MenuBarButtonStyle())
         .padding(12)

@@ -45,9 +45,9 @@ struct CredentialEditorView: View {
         _title = State(initialValue: credential?.title ?? "")
         _username = State(initialValue: credential?.username ?? "")
         _notes = State(initialValue: credential?.notes ?? "")
-        _sequence = State(initialValue: credential?.autoTypeSequence ?? "{USERNAME}{TAB}{PASSWORD}{ENTER}")
+        _sequence = State(initialValue: credential?.autoTypeSequence ?? "{PASSWORD}{ENTER}")
         _matchPattern = State(initialValue: credential?.matchRules.first(where: { $0.type == .windowTitle })?.pattern ?? "")
-        _preset = State(initialValue: .custom)
+        _preset = State(initialValue: credential == nil ? .passwordEnter : .custom)
     }
 
     var body: some View {
