@@ -6,7 +6,7 @@
 
 Secure credential Auto-Type for macOS, available from the menu bar.
 
-> 简体中文：[README.zh-CN.md](README.zh-CN.md)
+[简体中文](README.zh-CN.md)
 
 KeyType keeps credential metadata and passwords in separate items in the macOS login Keychain. Passwords are read only when an Auto-Type sequence needs them and are never copied to the clipboard.
 
