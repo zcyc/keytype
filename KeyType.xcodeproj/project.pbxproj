@@ -1,0 +1,242 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B10000000000000000000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* AppDelegate.swift */; };
+		B10000000000000000000002 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* AppState.swift */; };
+		B10000000000000000000003 /* KeyTypeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* KeyTypeApp.swift */; };
+		B10000000000000000000004 /* CredentialEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* CredentialEditorView.swift */; };
+		B10000000000000000000005 /* CredentialListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* CredentialListView.swift */; };
+		B10000000000000000000006 /* CredentialPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* CredentialPickerView.swift */; };
+		B10000000000000000000007 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* MenuBarView.swift */; };
+		B10000000000000000000008 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* SettingsView.swift */; };
+		B10000000000000000000009 /* CredentialMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* CredentialMetadata.swift */; };
+		B10000000000000000000010 /* MatchRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010 /* MatchRule.swift */; };
+		B10000000000000000000011 /* AutoTypeSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* AutoTypeSequence.swift */; };
+		B10000000000000000000012 /* AutoTypeSequenceParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* AutoTypeSequenceParser.swift */; };
+		B10000000000000000000013 /* AutoTypeTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* AutoTypeTarget.swift */; };
+		B10000000000000000000014 /* KeychainError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* KeychainError.swift */; };
+		B10000000000000000000015 /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* AuthenticationService.swift */; };
+		B10000000000000000000016 /* AccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* AccessibilityService.swift */; };
+		B10000000000000000000017 /* KeyboardEventSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* KeyboardEventSender.swift */; };
+		B10000000000000000000018 /* AutoTypeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* AutoTypeService.swift */; };
+		B10000000000000000000019 /* CredentialMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* CredentialMatcher.swift */; };
+		B10000000000000000000020 /* GlobalHotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* GlobalHotkeyService.swift */; };
+		B10000000000000000000021 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* KeychainService.swift */; };
+		B10000000000000000000022 /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* LaunchAtLoginService.swift */; };
+		B10000000000000000000023 /* AutoTypeSequenceParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* AutoTypeSequenceParserTests.swift */; };
+		B10000000000000000000024 /* CredentialMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* CredentialMatcherTests.swift */; };
+		B10000000000000000000025 /* KeychainServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* KeychainServiceTests.swift */; };
+		B10000000000000000000026 /* KeyTypeCore product in Frameworks */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* libKeyTypeCore.a */; };
+		B10000000000000000000027 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* XCTest.framework */; };
+		B10000000000000000000028 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* AppKit.framework */; };
+		B10000000000000000000029 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* ApplicationServices.framework */; };
+		B10000000000000000000030 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* CoreGraphics.framework */; };
+		B10000000000000000000031 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* LocalAuthentication.framework */; };
+		B10000000000000000000032 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000005 /* Security.framework */; };
+		B10000000000000000000033 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* ServiceManagement.framework */; };
+		B10000000000000000000034 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* SwiftUI.framework */; };
+		B10000000000000000000035 /* KeyTypeCore product in Tests */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* libKeyTypeCore.a */; };
+		B10000000000000000000036 /* XCTest.framework in Tests */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* XCTest.framework */; };
+		B10000000000000000000037 /* KeyType.icns in Resources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000006 /* KeyType.icns */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E10000000000000000000001 /* Core target proxy */ = {isa = PBXContainerItemProxy; containerPortal = E10000000000000000000003 /* Project object */; proxyType = 1; remoteGlobalIDString = 910000000000000000000002; remoteInfo = KeyTypeCore; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/App/AppDelegate.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000002 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/App/AppState.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000003 /* KeyTypeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/App/KeyTypeApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000004 /* CredentialEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/Features/CredentialEditor/CredentialEditorView.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000005 /* CredentialListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/Features/CredentialList/CredentialListView.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000006 /* CredentialPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/Features/CredentialPicker/CredentialPickerView.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000007 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/Features/MenuBar/MenuBarView.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000008 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyType/Features/Settings/SettingsView.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000009 /* CredentialMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Models/CredentialMetadata.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000010 /* MatchRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Models/MatchRule.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000011 /* AutoTypeSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Models/AutoTypeSequence.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000012 /* AutoTypeSequenceParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/AutoType/AutoTypeSequenceParser.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000013 /* AutoTypeTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Models/AutoTypeTarget.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000014 /* KeychainError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Security/KeychainError.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000015 /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Security/AuthenticationService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000016 /* AccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/AccessibilityService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000017 /* KeyboardEventSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/AutoType/KeyboardEventSender.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000018 /* AutoTypeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/AutoTypeService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000019 /* CredentialMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/CredentialMatcher.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000020 /* GlobalHotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/GlobalHotkeyService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000021 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/KeychainService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000022 /* LaunchAtLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/KeyTypeCore/Services/LaunchAtLoginService.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000023 /* AutoTypeSequenceParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/KeyTypeCoreTests/AutoTypeSequenceParserTests.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000024 /* CredentialMatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/KeyTypeCoreTests/CredentialMatcherTests.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000025 /* KeychainServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/KeyTypeCoreTests/KeychainServiceTests.swift; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000001 /* KeyType.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyType.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C10000000000000000000002 /* KeyTypeCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyTypeCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10000000000000000000001 /* libKeyTypeCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKeyTypeCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F10000000000000000000001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F10000000000000000000002 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		F10000000000000000000003 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F10000000000000000000004 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		F10000000000000000000005 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		F10000000000000000000006 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		F10000000000000000000007 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		F10000000000000000000008 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = /Library/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		C10000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KeyType/Support/Info.plist; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000005 /* KeyType.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyType/Support/KeyType.entitlements; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000006 /* KeyType.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyType/Support/KeyType.icns; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10000000000000000000010 /* KeyTypeCore Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000011 /* KeyType Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (
+			B10000000000000000000026,
+			B10000000000000000000028,
+			B10000000000000000000029,
+			B10000000000000000000030,
+			B10000000000000000000031,
+			B10000000000000000000032,
+			B10000000000000000000033,
+			B10000000000000000000034,
+		); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000012 /* KeyTypeCoreTests Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (
+			B10000000000000000000035,
+			B10000000000000000000036,
+			B10000000000000000000028,
+			B10000000000000000000029,
+			B10000000000000000000030,
+			B10000000000000000000031,
+			B10000000000000000000032,
+			B10000000000000000000033,
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000000000000000000020 /* Main group */ = {isa = PBXGroup; children = (
+			E10000000000000000000021 /* KeyType app sources */,
+			E10000000000000000000022 /* KeyTypeCore sources */,
+			E10000000000000000000023 /* Tests */,
+			E10000000000000000000024 /* Support */,
+			E10000000000000000000025 /* Products */,
+			E10000000000000000000026 /* Frameworks */,
+		); sourceTree = "<group>"; };
+		E10000000000000000000021 /* KeyType app sources */ = {isa = PBXGroup; children = (
+			A10000000000000000000001,
+			A10000000000000000000002,
+			A10000000000000000000003,
+			A10000000000000000000004,
+			A10000000000000000000005,
+			A10000000000000000000006,
+			A10000000000000000000007,
+			A10000000000000000000008,
+		); name = KeyType; sourceTree = "<group>"; };
+		E10000000000000000000022 /* KeyTypeCore sources */ = {isa = PBXGroup; children = (
+			A10000000000000000000009,
+			A10000000000000000000010,
+			A10000000000000000000011,
+			A10000000000000000000012,
+			A10000000000000000000013,
+			A10000000000000000000014,
+			A10000000000000000000015,
+			A10000000000000000000016,
+			A10000000000000000000017,
+			A10000000000000000000018,
+			A10000000000000000000019,
+			A10000000000000000000020,
+			A10000000000000000000021,
+			A10000000000000000000022,
+		); name = KeyTypeCore; sourceTree = "<group>"; };
+		E10000000000000000000023 /* Tests */ = {isa = PBXGroup; children = (
+			A10000000000000000000023,
+			A10000000000000000000024,
+			A10000000000000000000025,
+		); name = KeyTypeCoreTests; sourceTree = "<group>"; };
+		E10000000000000000000024 /* Support */ = {isa = PBXGroup; children = (
+			C10000000000000000000004,
+			C10000000000000000000005,
+			C10000000000000000000006,
+		); name = Support; sourceTree = "<group>"; };
+		E10000000000000000000025 /* Products */ = {isa = PBXGroup; children = (
+			C10000000000000000000001,
+			D10000000000000000000001,
+		); name = Products; sourceTree = "<group>"; };
+		E10000000000000000000026 /* Frameworks */ = {isa = PBXGroup; children = (
+			F10000000000000000000001,
+			F10000000000000000000002,
+			F10000000000000000000003,
+			F10000000000000000000004,
+			F10000000000000000000005,
+			F10000000000000000000006,
+			F10000000000000000000007,
+			F10000000000000000000008,
+		); name = Frameworks; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		910000000000000000000001 /* KeyType */ = {isa = PBXNativeTarget; buildConfigurationList = C10000000000000000000010 /* KeyType configurations */; buildPhases = (E10000000000000000000031, E10000000000000000000011, E10000000000000000000041); buildRules = (); dependencies = (C10000000000000000000020); name = KeyType; productName = KeyType; productReference = C10000000000000000000001 /* KeyType.app */; productType = "com.apple.product-type.application"; };
+		910000000000000000000002 /* KeyTypeCore */ = {isa = PBXNativeTarget; buildConfigurationList = C10000000000000000000011 /* KeyTypeCore configurations */; buildPhases = (E10000000000000000000032, E10000000000000000000010, E10000000000000000000042); buildRules = (); dependencies = (); name = KeyTypeCore; productName = KeyTypeCore; productReference = D10000000000000000000001 /* libKeyTypeCore.a */; productType = "com.apple.product-type.library.static"; };
+		910000000000000000000003 /* KeyTypeCoreTests */ = {isa = PBXNativeTarget; buildConfigurationList = C10000000000000000000012 /* KeyTypeCoreTests configurations */; buildPhases = (E10000000000000000000033, E10000000000000000000012, E10000000000000000000043); buildRules = (); dependencies = (C10000000000000000000021); name = KeyTypeCoreTests; productName = KeyTypeCoreTests; productReference = C10000000000000000000002 /* KeyTypeCoreTests.xctest */; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E10000000000000000000003 /* Project object */ = {
+			isa = PBXProject;
+			attributes = { LastUpgradeCheck = 2600; ORGANIZATIONNAME = KeyType; TargetAttributes = { 910000000000000000000001 = { CreatedOnToolsVersion = 26.0; }; 910000000000000000000002 = { CreatedOnToolsVersion = 26.0; }; 910000000000000000000003 = { CreatedOnToolsVersion = 26.0; TestTargetID = 910000000000000000000001; }; }; };
+			buildConfigurationList = C10000000000000000000013 /* Project configurations */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = E10000000000000000000020;
+			productRefGroup = E10000000000000000000025;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (910000000000000000000001, 910000000000000000000002, 910000000000000000000003);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E10000000000000000000041 /* KeyType Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000037); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000042 /* KeyTypeCore Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000043 /* KeyTypeCoreTests Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E10000000000000000000031 /* KeyType Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000001, B10000000000000000000002, B10000000000000000000003, B10000000000000000000004, B10000000000000000000005, B10000000000000000000006, B10000000000000000000007, B10000000000000000000008); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000032 /* KeyTypeCore Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000009, B10000000000000000000010, B10000000000000000000011, B10000000000000000000012, B10000000000000000000013, B10000000000000000000014, B10000000000000000000015, B10000000000000000000016, B10000000000000000000017, B10000000000000000000018, B10000000000000000000019, B10000000000000000000020, B10000000000000000000021, B10000000000000000000022); runOnlyForDeploymentPostprocessing = 0; };
+		E10000000000000000000033 /* KeyTypeCoreTests Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B10000000000000000000023, B10000000000000000000024, B10000000000000000000025); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C10000000000000000000020 /* KeyType depends on KeyTypeCore */ = {isa = PBXTargetDependency; target = 910000000000000000000002; targetProxy = E10000000000000000000001; };
+		C10000000000000000000021 /* Tests depend on KeyTypeCore */ = {isa = PBXTargetDependency; target = 910000000000000000000002; targetProxy = E10000000000000000000001; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C10000000000000000000030 /* Project Debug */ = {isa = XCBuildConfiguration; buildSettings = { CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_VERSION = 5.0; }; name = Debug; };
+		C10000000000000000000031 /* Project Release */ = {isa = XCBuildConfiguration; buildSettings = { CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; SWIFT_VERSION = 5.0; }; name = Release; };
+		C10000000000000000000032 /* Core Debug */ = {isa = XCBuildConfiguration; buildSettings = { PRODUCT_NAME = KeyTypeCore; SKIP_INSTALL = YES; }; name = Debug; };
+		C10000000000000000000033 /* Core Release */ = {isa = XCBuildConfiguration; buildSettings = { PRODUCT_NAME = KeyTypeCore; SKIP_INSTALL = YES; }; name = Release; };
+		C10000000000000000000034 /* App Debug */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = KeyType/Support/KeyType.entitlements; CODE_SIGN_STYLE = Automatic; ENABLE_HARDENED_RUNTIME = YES; INFOPLIST_FILE = KeyType/Support/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.keytype.app; PRODUCT_NAME = KeyType; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; name = Debug; };
+		C10000000000000000000035 /* App Release */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = KeyType/Support/KeyType.entitlements; CODE_SIGN_STYLE = Automatic; ENABLE_HARDENED_RUNTIME = YES; INFOPLIST_FILE = KeyType/Support/Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; PRODUCT_BUNDLE_IDENTIFIER = com.keytype.app; PRODUCT_NAME = KeyType; SWIFT_OPTIMIZATION_LEVEL = "-O"; }; name = Release; };
+		C10000000000000000000036 /* Tests Debug */ = {isa = XCBuildConfiguration; buildSettings = { GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = com.keytype.app.tests; PRODUCT_NAME = KeyTypeCoreTests; }; name = Debug; };
+		C10000000000000000000037 /* Tests Release */ = {isa = XCBuildConfiguration; buildSettings = { GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = com.keytype.app.tests; PRODUCT_NAME = KeyTypeCoreTests; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C10000000000000000000013 /* Project configurations */ = {isa = XCConfigurationList; buildConfigurations = (C10000000000000000000030, C10000000000000000000031); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C10000000000000000000011 /* KeyTypeCore configurations */ = {isa = XCConfigurationList; buildConfigurations = (C10000000000000000000032, C10000000000000000000033); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C10000000000000000000010 /* KeyType configurations */ = {isa = XCConfigurationList; buildConfigurations = (C10000000000000000000034, C10000000000000000000035); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		C10000000000000000000012 /* KeyTypeCoreTests configurations */ = {isa = XCConfigurationList; buildConfigurations = (C10000000000000000000036, C10000000000000000000037); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = E10000000000000000000003 /* Project object */;
+}
