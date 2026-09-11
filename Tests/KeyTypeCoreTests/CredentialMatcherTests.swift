@@ -40,4 +40,15 @@ final class CredentialMatcherTests: XCTestCase {
         XCTAssertGreaterThan(matcher.score(contains, for: target), 0)
         XCTAssertGreaterThan(matcher.score(insensitive, for: target), 0)
     }
+
+    func testSearchesCustomFieldNamesAndValues() {
+        let target = AutoTypeTarget(processIdentifier: 1, bundleIdentifier: nil, applicationName: "Terminal", windowTitle: nil)
+        let credentials = [
+            CredentialMetadata(title: "database", username: "root", customFields: ["TENANT": "acme-prod"]),
+            CredentialMetadata(title: "other", username: "admin")
+        ]
+
+        XCTAssertEqual(CredentialMatcher().sort(credentials, for: target, query: "acme-prod").map(\.title), ["database"])
+        XCTAssertEqual(CredentialMatcher().sort(credentials, for: target, query: "tenant").map(\.title), ["database"])
+    }
 }

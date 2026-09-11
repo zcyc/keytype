@@ -3,6 +3,11 @@ import Combine
 import KeyTypeCore
 import SwiftUI
 
+struct CustomFieldInput {
+    let name: String
+    let value: String
+}
+
 @MainActor
 final class AppState: ObservableObject {
     @Published private(set) var credentials: [CredentialMetadata] = []
@@ -34,16 +39,12 @@ final class AppState: ObservableObject {
     private var sessionObservers: [NSObjectProtocol] = []
 
     var pickerCredentials: [CredentialMetadata] {
-        let filtered = pickerSearch.isEmpty ? credentials : credentials.filter {
-            $0.title.localizedCaseInsensitiveContains(pickerSearch)
-                || $0.username.localizedCaseInsensitiveContains(pickerSearch)
-        }
         guard let pickerTarget else {
-            return filtered.sorted {
+            return credentials.filter(matchesPickerSearch).sorted {
                 $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
         }
-        return matcher.sort(filtered, for: pickerTarget)
+        return matcher.sort(credentials, for: pickerTarget, query: pickerSearch)
     }
 
     var isAutoTyping: Bool { autoTypeTask != nil }
@@ -189,6 +190,7 @@ final class AppState: ObservableObject {
         title: String,
         username: String,
         password: String,
+        customFields inputs: [CustomFieldInput],
         notes: String,
         sequenceText: String,
         matchPattern: String
@@ -199,7 +201,14 @@ final class AppState: ObservableObject {
             return
         }
         do {
-            _ = try parser.parse(sequenceText)
+            let customFields = try Self.normalizedCustomFields(inputs)
+            let sequence = try parser.parse(sequenceText)
+            for token in sequence.tokens {
+                guard case .field(let name) = token else { continue }
+                guard customFields[name] != nil else {
+                    throw AutoTypeSequenceError.missingField(name)
+                }
+            }
             let rules = matchPattern.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 ? []
                 : [MatchRule(type: .windowTitle, pattern: matchPattern.trimmingCharacters(in: .whitespacesAndNewlines))]
@@ -207,12 +216,13 @@ final class AppState: ObservableObject {
                 id: id,
                 title: trimmedTitle,
                 username: username,
+                customFields: customFields,
                 notes: notes.isEmpty ? nil : notes,
                 matchRules: rules,
                 autoTypeSequence: sequenceText
             )
 
-            if keychain.credentialExists(id: id) {
+            if try keychain.credentialExists(id: id) {
                 try keychain.updateCredential(metadata, password: password.isEmpty ? nil : password)
             } else {
                 guard !password.isEmpty else {
@@ -229,10 +239,34 @@ final class AppState: ObservableObject {
         }
     }
 
+    private static func normalizedCustomFields(_ inputs: [CustomFieldInput]) throws -> [String: String] {
+        var fields: [String: String] = [:]
+        for input in inputs {
+            let rawName = input.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let name = AutoTypeSequenceParser.normalizedFieldName(rawName) else {
+                throw AutoTypeSequenceError.invalidFieldName(rawName)
+            }
+            guard fields.updateValue(input.value, forKey: name) == nil else {
+                throw AutoTypeSequenceError.duplicateField(name)
+            }
+        }
+        return fields
+    }
+
+    private func matchesPickerSearch(_ credential: CredentialMetadata) -> Bool {
+        guard !pickerSearch.isEmpty else { return true }
+        return credential.title.localizedCaseInsensitiveContains(pickerSearch)
+            || credential.username.localizedCaseInsensitiveContains(pickerSearch)
+            || credential.customFields.contains {
+                $0.key.localizedCaseInsensitiveContains(pickerSearch)
+                    || $0.value.localizedCaseInsensitiveContains(pickerSearch)
+            }
+    }
+
     func deleteCredential(_ credential: CredentialMetadata) {
         let alert = NSAlert()
         alert.messageText = "Delete “\(credential.title)”?"
-        alert.informativeText = "This removes the credential from KeyType and synced Keychain devices."
+        alert.informativeText = "This removes the credential from KeyType and the macOS login Keychain."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Delete")
         alert.addButton(withTitle: "Cancel")
@@ -414,9 +448,11 @@ final class AppState: ObservableObject {
 
     private func closeCurrentWindow() {
         NSApp.keyWindow?.close()
+        editorWindows.removeAll { !$0.isVisible }
     }
 
     private func showWindow<Content: View>(_ content: Content, title: String, size: NSSize) {
+        editorWindows.removeAll { !$0.isVisible }
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.titled, .closable, .resizable],

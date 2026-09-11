@@ -2,6 +2,9 @@ import Foundation
 
 public enum AutoTypeSequenceError: Error, Equatable, LocalizedError, Sendable {
     case unknownToken(String)
+    case invalidFieldName(String)
+    case duplicateField(String)
+    case missingField(String)
     case invalidDelay(String)
     case malformedSequence
 
@@ -9,6 +12,12 @@ public enum AutoTypeSequenceError: Error, Equatable, LocalizedError, Sendable {
         switch self {
         case .unknownToken(let token):
             return "Unknown auto-type token: \(token)"
+        case .invalidFieldName(let name):
+            return "Invalid custom field name: \(name). Use letters, numbers, and underscores."
+        case .duplicateField(let name):
+            return "Duplicate custom field: \(name)"
+        case .missingField(let name):
+            return "Custom field is not defined: \(name)"
         case .invalidDelay(let value):
             return "Invalid delay: \(value). Use an integer from 0 to 30000 milliseconds."
         case .malformedSequence:
@@ -21,6 +30,15 @@ public struct AutoTypeSequenceParser: Sendable {
     public static let maximumDelayMilliseconds = 30_000
 
     public init() {}
+
+    public static func normalizedFieldName(_ input: String) -> String? {
+        let name = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty,
+              name.utf8.allSatisfy({ $0 == 95 || $0 >= 48 && $0 <= 57 || $0 >= 65 && $0 <= 90 || $0 >= 97 && $0 <= 122 }) else {
+            return nil
+        }
+        return name.uppercased()
+    }
 
     public func parse(_ input: String) throws -> AutoTypeSequence {
         var tokens: [AutoTypeToken] = []
@@ -65,6 +83,12 @@ public struct AutoTypeSequenceParser: Sendable {
         case "PASSWORD": return .password
         case "TAB": return .tab
         case "ENTER": return .enter
+        case let field where field.hasPrefix("FIELD:"):
+            let rawName = String(field.dropFirst("FIELD:".count))
+            guard let name = Self.normalizedFieldName(rawName) else {
+                throw AutoTypeSequenceError.invalidFieldName(rawName)
+            }
+            return .field(name)
         case let delay where delay.hasPrefix("DELAY "):
             let value = String(delay.dropFirst("DELAY ".count))
             guard !value.isEmpty, value.allSatisfy(\.isNumber),

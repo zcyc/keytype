@@ -14,6 +14,7 @@ KeyType keeps credential metadata and passwords in separate items in the macOS l
 
 - Native menu bar workflow with a keyboard-first credential picker.
 - Optional window-title matching to rank the most likely credentials.
+- Custom fields such as email, tenant, or OTP can be referenced from Auto-Type sequences.
 - Editable Auto-Type presets and custom sequences.
 - Global shortcut recording with a reset button; the shortcut is consumed by KeyType instead of the active app.
 - Optional Launch at Login using macOS `SMAppService`.
@@ -83,6 +84,7 @@ Sequences are made from these tokens:
 | --- | --- |
 | `{USERNAME}` | Type the username |
 | `{PASSWORD}` | Read and type the password |
+| `{FIELD:NAME}` | Type the custom field named `NAME` |
 | `{TAB}` | Press Tab |
 | `{ENTER}` | Press Return |
 | `{DELAY 500}` | Wait 500 ms; values from 0 to 30,000 ms are supported |
@@ -93,7 +95,10 @@ Examples:
 {PASSWORD}{ENTER}
 {USERNAME}{TAB}{PASSWORD}{ENTER}
 {USERNAME}{ENTER}{DELAY 500}{PASSWORD}{ENTER}
+{FIELD:EMAIL}{TAB}{PASSWORD}{ENTER}
 ```
+
+Add custom fields in the credential editor. Field names use letters, numbers, and underscores and are case-insensitive; values are typed exactly as saved, including spaces. Spaces written directly in a sequence are also typed literally.
 
 For a new credential, the preset defaults to **Password + Enter** (`{PASSWORD}{ENTER}`). Selecting a preset replaces the sequence with that preset’s value. Editing the sequence changes the preset to **Custom**.
 
@@ -119,6 +124,8 @@ Credentials are stored as two separate login Keychain items:
 - Password: `com.keytype.app.password`
 
 The password is fetched only at the `{PASSWORD}` step. It is not stored in picker state, UserDefaults, SwiftData, logs, or the clipboard. KeyType has no network capability.
+
+Custom fields are stored with credential metadata in the login Keychain and are available to Auto-Type when their `{FIELD:NAME}` token is executed.
 
 ## Troubleshooting
 

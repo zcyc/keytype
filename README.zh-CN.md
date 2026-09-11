@@ -6,14 +6,13 @@
 
 原生 macOS 菜单栏凭据自动输入工具。
 
-> English: [README.md](README.md)
-
 KeyType 将凭据元数据和密码分别存储在 macOS 用户登录 Keychain 中。只有自动输入序列执行到 `{PASSWORD}` 时才会读取密码，并且不会使用剪贴板传输密码。
 
 ## 功能
 
 - 原生菜单栏操作，支持键盘优先的凭据选择器。
 - 可选的窗口标题匹配，用于将更可能的凭据排在前面。
+- 支持添加邮箱、租户、OTP 等自定义字段，并在自动输入序列中引用。
 - 支持自动输入预设和自定义序列。
 - 支持录制快捷键和一键重置；快捷键会被 KeyType 消费，不会继续触发当前应用的操作。
 - 可选的“登录时启动”，使用 macOS `SMAppService`。
@@ -83,6 +82,7 @@ make clean                         # 删除构建产物
 | --- | --- |
 | `{USERNAME}` | 输入用户名 |
 | `{PASSWORD}` | 读取并输入密码 |
+| `{FIELD:NAME}` | 输入名为 `NAME` 的自定义字段 |
 | `{TAB}` | 按 Tab |
 | `{ENTER}` | 按 Return |
 | `{DELAY 500}` | 等待 500 毫秒；支持 0 到 30,000 毫秒 |
@@ -93,7 +93,10 @@ make clean                         # 删除构建产物
 {PASSWORD}{ENTER}
 {USERNAME}{TAB}{PASSWORD}{ENTER}
 {USERNAME}{ENTER}{DELAY 500}{PASSWORD}{ENTER}
+{FIELD:EMAIL}{TAB}{PASSWORD}{ENTER}
 ```
+
+可以在凭据编辑器中添加自定义字段。字段名支持字母、数字和下划线，且不区分大小写；字段值会按保存内容输入，包括其中的空格。序列中直接写入的空格也会原样输入。
 
 新建凭据时，预设默认选中 **Password + Enter**，序列为 `{PASSWORD}{ENTER}`。选择其他预设会覆盖输入框中的序列；直接编辑序列后，预设会变为 **Custom**。
 
@@ -119,6 +122,8 @@ KeyType 使用辅助功能 API 检查聚焦窗口、恢复焦点、确认目标�
 - 密码：`com.keytype.app.password`
 
 只有执行到 `{PASSWORD}` 步骤时才会读取密码。密码不会保存在选择器状态、UserDefaults、SwiftData、日志或剪贴板中。KeyType 不具备网络能力。
+
+自定义字段会和凭据元数据一起存储在登录 Keychain 中，并在执行对应的 `{FIELD:NAME}` Token 时输入。
 
 ## 故障排查
 

@@ -22,6 +22,7 @@ public enum AutoTypeError: Error, LocalizedError, Sendable {
     case accessibilityRequired
     case targetUnavailable
     case targetChanged
+    case missingField(String)
     case cancelled
 
     public var errorDescription: String? {
@@ -30,6 +31,7 @@ public enum AutoTypeError: Error, LocalizedError, Sendable {
         case .accessibilityRequired: return "KeyType needs Accessibility access to type credentials."
         case .targetUnavailable: return "The original target application is no longer available."
         case .targetChanged: return "Auto-Type stopped because the active application changed."
+        case .missingField(let name): return "Custom field is not defined: \(name)"
         case .cancelled: return "Auto-Type was cancelled."
         }
     }
@@ -94,17 +96,21 @@ public final class AutoTypeService {
             state = .typing
 
             for token in sequence.tokens {
-                try checkCancellation()
+                try verifyTarget(target)
                 switch token {
                 case .username:
                     try await sender.send(text: credential.username, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
                 case .password:
-                    try verifyTarget(target)
                     // Password is fetched only at this token; it never enters picker state or the clipboard.
                     do {
                         let password = try keychain.readPassword(id: credential.id)
                         try await sender.send(text: password, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
                     }
+                case .field(let name):
+                    guard let value = credential.customFields[name] else {
+                        throw AutoTypeError.missingField(name)
+                    }
+                    try await sender.send(text: value, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
                 case .tab:
                     try sender.press(.tab)
                 case .enter:

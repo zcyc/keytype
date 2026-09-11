@@ -25,6 +25,12 @@ private enum SequencePreset: String, CaseIterable, Identifiable {
     }
 }
 
+private struct CustomFieldDraft: Identifiable {
+    let id = UUID()
+    var name: String
+    var value: String
+}
+
 struct CredentialEditorView: View {
     @ObservedObject var state: AppState
     private let credentialID: UUID
@@ -33,6 +39,7 @@ struct CredentialEditorView: View {
     @State private var title: String
     @State private var username: String
     @State private var password = ""
+    @State private var customFields: [CustomFieldDraft]
     @State private var notes: String
     @State private var sequence: String
     @State private var matchPattern: String
@@ -44,6 +51,10 @@ struct CredentialEditorView: View {
         isExisting = credential != nil
         _title = State(initialValue: credential?.title ?? "")
         _username = State(initialValue: credential?.username ?? "")
+        let existingFields = credential?.customFields ?? [:]
+        _customFields = State(initialValue: existingFields.keys.sorted().map {
+            CustomFieldDraft(name: $0, value: existingFields[$0] ?? "")
+        })
         _notes = State(initialValue: credential?.notes ?? "")
         _sequence = State(initialValue: credential?.autoTypeSequence ?? "{PASSWORD}{ENTER}")
         _matchPattern = State(initialValue: credential?.matchRules.first(where: { $0.type == .windowTitle })?.pattern ?? "")
@@ -56,6 +67,26 @@ struct CredentialEditorView: View {
                 TextField("Title", text: $title)
                 TextField("Username", text: $username)
                 SecureField(isExisting ? "Password (leave empty to keep current)" : "Password", text: $password)
+            }
+
+            Section("Custom Fields") {
+                ForEach($customFields) { $field in
+                    HStack {
+                        TextField("Name", text: $field.name)
+                            .frame(width: 150)
+                        TextField("Value", text: $field.value)
+                        Button {
+                            customFields.removeAll { $0.id == field.id }
+                        } label: {
+                            Image(systemName: "minus.circle")
+                        }
+                        .buttonStyle(.borderless)
+                        .help("Remove field")
+                    }
+                }
+                Button("Add Field") {
+                    customFields.append(CustomFieldDraft(name: "", value: ""))
+                }
             }
 
             Section("Auto-Type") {
@@ -78,7 +109,7 @@ struct CredentialEditorView: View {
                     )
                 )
                     .font(.system(.body, design: .monospaced))
-                Text("Tokens: {USERNAME} {PASSWORD} {TAB} {ENTER} {DELAY 500}")
+                Text("Tokens: {USERNAME} {PASSWORD} {FIELD:NAME} {TAB} {ENTER} {DELAY 500}. Spaces are typed literally.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -109,6 +140,7 @@ struct CredentialEditorView: View {
             title: title,
             username: username,
             password: password,
+            customFields: customFields.map { CustomFieldInput(name: $0.name, value: $0.value) },
             notes: notes,
             sequenceText: sequence,
             matchPattern: matchPattern

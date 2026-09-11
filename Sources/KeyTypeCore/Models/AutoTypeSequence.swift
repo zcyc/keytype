@@ -3,6 +3,7 @@ import Foundation
 public enum AutoTypeToken: Equatable, Sendable {
     case username
     case password
+    case field(String)
     case tab
     case enter
     case delay(milliseconds: Int)

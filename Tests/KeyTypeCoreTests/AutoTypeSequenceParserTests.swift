@@ -13,8 +13,15 @@ final class AutoTypeSequenceParserTests: XCTestCase {
 
     func testParsesTextAndSpecialTokens() throws {
         XCTAssertEqual(
-            try parser.parse("hello{TAB}world"),
-            AutoTypeSequence(tokens: [.text("hello"), .tab, .text("world")])
+            try parser.parse("hello {TAB}{FIELD:full_name}"),
+            AutoTypeSequence(tokens: [.text("hello "), .tab, .field("FULL_NAME")])
+        )
+    }
+
+    func testPreservesSpacesInText() throws {
+        XCTAssertEqual(
+            try parser.parse("{FIELD:FULL_NAME} {PASSWORD}"),
+            AutoTypeSequence(tokens: [.field("FULL_NAME"), .text(" "), .password])
         )
     }
 
@@ -27,6 +34,9 @@ final class AutoTypeSequenceParserTests: XCTestCase {
         }
         XCTAssertThrowsError(try parser.parse("{")) { error in
             XCTAssertEqual(error as? AutoTypeSequenceError, .malformedSequence)
+        }
+        XCTAssertThrowsError(try parser.parse("{FIELD:full name}")) { error in
+            XCTAssertEqual(error as? AutoTypeSequenceError, .invalidFieldName("full name"))
         }
     }
 }

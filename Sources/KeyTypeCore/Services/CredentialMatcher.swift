@@ -49,6 +49,10 @@ public struct CredentialMatcher: Sendable {
         let filtered = query.isEmpty ? credentials : credentials.filter {
             $0.title.localizedCaseInsensitiveContains(query)
                 || $0.username.localizedCaseInsensitiveContains(query)
+                || $0.customFields.contains {
+                    $0.key.localizedCaseInsensitiveContains(query)
+                        || $0.value.localizedCaseInsensitiveContains(query)
+                }
         }
         return filtered.sorted {
             let left = score($0, for: target)

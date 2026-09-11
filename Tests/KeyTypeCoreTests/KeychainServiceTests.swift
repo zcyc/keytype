@@ -8,7 +8,12 @@ final class KeychainServiceTests: XCTestCase {
             metadataService: "com.keytype.tests.metadata.\(suffix)",
             passwordService: "com.keytype.tests.password.\(suffix)"
         )
-        let credential = CredentialMetadata(title: "test", username: "root", autoTypeSequence: "{PASSWORD}")
+        let credential = CredentialMetadata(
+            title: "test",
+            username: "root",
+            customFields: ["EMAIL": "root@example.com", "FULL_NAME": "Jane Doe"],
+            autoTypeSequence: "{FIELD:FULL_NAME}{TAB}{PASSWORD}"
+        )
         defer { try? service.deleteCredential(id: credential.id) }
 
         try service.saveCredential(credential, password: "secret")
@@ -22,7 +27,7 @@ final class KeychainServiceTests: XCTestCase {
         XCTAssertEqual(try service.readPassword(id: credential.id), "new-secret")
 
         try service.deleteCredential(id: credential.id)
-        XCTAssertFalse(service.credentialExists(id: credential.id))
+        XCTAssertFalse(try service.credentialExists(id: credential.id))
     }
 
     func testDuplicateAndMissingItemsAreReported() throws {

@@ -18,15 +18,15 @@ public final class KeychainService: Sendable {
 
     public func saveCredential(_ metadata: CredentialMetadata, password: String) throws {
         let metadataData = try JSONEncoder().encode(metadata)
+        try add(data: metadataData, service: metadataService, id: metadata.id)
         do {
-            try add(data: metadataData, service: metadataService, id: metadata.id)
-            do {
-                try add(data: Data(password.utf8), service: passwordService, id: metadata.id)
-            } catch {
-                try? delete(dataService: metadataService, id: metadata.id)
-                throw error
-            }
+            try add(data: Data(password.utf8), service: passwordService, id: metadata.id)
         } catch {
+            do {
+                try delete(dataService: metadataService, id: metadata.id)
+            } catch {
+                throw KeychainError.partialFailure
+            }
             throw error
         }
     }
@@ -51,16 +51,20 @@ public final class KeychainService: Sendable {
 
     public func deleteCredential(id: UUID) throws {
         var firstError: Error?
+        var deletedCount = 0
         for service in [metadataService, passwordService] {
             do {
                 try delete(dataService: service, id: id)
+                deletedCount += 1
             } catch KeychainError.itemNotFound {
                 continue
             } catch {
                 firstError = firstError ?? error
             }
         }
-        if let firstError { throw firstError }
+        if let firstError {
+            throw deletedCount > 0 ? KeychainError.partialFailure : firstError
+        }
     }
 
     public func readMetadata(id: UUID) throws -> CredentialMetadata {
@@ -94,8 +98,13 @@ public final class KeychainService: Sendable {
         return password
     }
 
-    public func credentialExists(id: UUID) -> Bool {
-        (try? readData(service: metadataService, id: id)) != nil
+    public func credentialExists(id: UUID) throws -> Bool {
+        do {
+            _ = try readData(service: metadataService, id: id)
+            return true
+        } catch KeychainError.itemNotFound {
+            return false
+        }
     }
 
     private func add(data: Data, service: String, id: UUID) throws {
