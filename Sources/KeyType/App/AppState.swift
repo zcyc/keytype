@@ -9,15 +9,16 @@ struct CustomFieldInput {
 }
 
 @MainActor
-final class AppState: ObservableObject {
+final class AppState: NSObject, ObservableObject, NSWindowDelegate {
     @Published private(set) var credentials: [CredentialMetadata] = []
     @Published var pickerSearch = ""
     @Published var selectedPickerCredentialID: UUID?
     @Published var message: String?
-    @Published private(set) var isLocked = true
     @Published private(set) var launchAtLogin = false
     @Published private(set) var hotkey: GlobalHotkey
-    @Published var requireAuthentication = true
+    @Published var requireAuthentication: Bool {
+        didSet { UserDefaults.standard.set(requireAuthentication, forKey: "requireAuthentication") }
+    }
     @Published var authenticationGracePeriod: Int
     @Published var characterDelayMilliseconds: Int
     @Published var restoreFocusDelayMilliseconds: Int
@@ -49,16 +50,18 @@ final class AppState: ObservableObject {
 
     var isAutoTyping: Bool { autoTypeTask != nil }
 
-    init() {
+    override init() {
         keychain = KeychainService()
         authentication = AuthenticationService()
         accessibility = AccessibilityService()
         autoType = AutoTypeService(keychain: keychain, authentication: authentication, accessibility: accessibility)
-        authenticationGracePeriod = Self.readInteger("authenticationGracePeriod", defaultValue: 30)
-        characterDelayMilliseconds = Self.readInteger("characterDelayMilliseconds", defaultValue: 10)
-        restoreFocusDelayMilliseconds = Self.readInteger("restoreFocusDelayMilliseconds", defaultValue: 200)
+        authenticationGracePeriod = Self.readInteger("authenticationGracePeriod", defaultValue: 30, bounds: 0...300)
+        characterDelayMilliseconds = Self.readInteger("characterDelayMilliseconds", defaultValue: 10, bounds: 0...1_000)
+        restoreFocusDelayMilliseconds = Self.readInteger("restoreFocusDelayMilliseconds", defaultValue: 200, bounds: 0...5_000)
+        requireAuthentication = Self.readBool("requireAuthentication", defaultValue: true)
         hotkey = hotkeyService.hotkey
         launchAtLogin = launchService.isEnabled
+        super.init()
         authentication.gracePeriod = TimeInterval(authenticationGracePeriod)
     }
 
@@ -122,6 +125,7 @@ final class AppState: ObservableObject {
     func openPicker(target: AutoTypeTarget?) {
         guard autoTypeTask == nil else { return }
 
+        if pickerWindow != nil { dismissPicker() }
         pickerTarget = target
         pickerSearch = ""
         selectedPickerCredentialID = pickerCredentials.first?.id
@@ -180,7 +184,6 @@ final class AppState: ObservableObject {
     func lock() {
         cancelAutoType()
         authentication.lock()
-        isLocked = true
         dismissPicker()
         message = "KeyType is locked."
     }
@@ -369,7 +372,6 @@ final class AppState: ObservableObject {
                         options: options,
                         requireAuthentication: self.requireAuthentication
                     )
-                    self.isLocked = false
                     self.message = "Auto-Type completed."
                 } catch {
                     self.message = error.localizedDescription
@@ -396,6 +398,7 @@ final class AppState: ObservableObject {
         let hostingController = NSHostingController(rootView: CredentialPickerView(state: self))
         hostingController.sizingOptions = []
         panel.contentViewController = hostingController
+        panel.delegate = self
         panel.setContentSize(size)
         panel.contentMinSize = size
         panel.center()
@@ -422,6 +425,14 @@ final class AppState: ObservableObject {
                 return event
             }
         }
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let closingWindow = notification.object as? NSWindow else { return }
+        if let pickerWindow, closingWindow === pickerWindow {
+            dismissPicker()
+        }
+        editorWindows.removeAll { $0 === closingWindow }
     }
 
     private func showAccessibilityRequirement() {
@@ -464,6 +475,7 @@ final class AppState: ObservableObject {
         let hostingController = NSHostingController(rootView: content)
         hostingController.sizingOptions = []
         window.contentViewController = hostingController
+        window.delegate = self
         window.setContentSize(size)
         window.contentMinSize = size
         window.center()
@@ -472,7 +484,13 @@ final class AppState: ObservableObject {
         editorWindows.append(window)
     }
 
-    private static func readInteger(_ key: String, defaultValue: Int) -> Int {
-        UserDefaults.standard.object(forKey: key) as? Int ?? defaultValue
+    private static func readInteger(_ key: String, defaultValue: Int, bounds: ClosedRange<Int>) -> Int {
+        guard UserDefaults.standard.object(forKey: key) != nil else { return defaultValue }
+        return min(max(UserDefaults.standard.integer(forKey: key), bounds.lowerBound), bounds.upperBound)
+    }
+
+    private static func readBool(_ key: String, defaultValue: Bool) -> Bool {
+        guard UserDefaults.standard.object(forKey: key) != nil else { return defaultValue }
+        return UserDefaults.standard.bool(forKey: key)
     }
 }

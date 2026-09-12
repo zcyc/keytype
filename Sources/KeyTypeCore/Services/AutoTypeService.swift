@@ -72,6 +72,12 @@ public final class AutoTypeService {
         requireAuthentication: Bool = true
     ) async throws {
         guard state == .idle else { throw AutoTypeError.alreadyRunning }
+        for token in sequence.tokens {
+            guard case .field(let name) = token else { continue }
+            guard credential.customFields[name] != nil else {
+                throw AutoTypeError.missingField(name)
+            }
+        }
         state = .preparing
         cancellationRequested = false
         installEscapeMonitor()

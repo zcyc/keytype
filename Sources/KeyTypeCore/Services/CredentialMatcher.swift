@@ -54,11 +54,14 @@ public struct CredentialMatcher: Sendable {
                         || $0.value.localizedCaseInsensitiveContains(query)
                 }
         }
-        return filtered.sorted {
-            let left = score($0, for: target)
-            let right = score($1, for: target)
-            return left == right ? $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending : left > right
+        let scored = filtered.map { credential in
+            (credential: credential, score: score(credential, for: target))
         }
+        return scored.sorted {
+            $0.score == $1.score
+                ? $0.credential.title.localizedCaseInsensitiveCompare($1.credential.title) == .orderedAscending
+                : $0.score > $1.score
+        }.map(\.credential)
     }
 
     private func similarity(_ lhs: String, _ rhs: String) -> Double {
