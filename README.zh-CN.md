@@ -121,7 +121,7 @@ KeyType 使用辅助功能 API 检查聚焦窗口、恢复焦点、确认目标�
 - 元数据：`com.keytype.app.metadata`
 - 密码：`com.keytype.app.password`
 
-只有执行到 `{PASSWORD}` 步骤时才会读取密码。密码不会保存在选择器状态、UserDefaults、SwiftData、日志或剪贴板中。KeyType 不具备网络能力。
+当序列包含 `{PASSWORD}` 时，KeyType 会在自动输入准备阶段、恢复目标应用焦点前读取密码。密码不会保存在选择器状态、UserDefaults、SwiftData、日志或剪贴板中。KeyType 不具备网络能力。
 
 自定义字段会和凭据元数据一起存储在登录 Keychain 中，并在执行对应的 `{FIELD:NAME}` Token 时输入。
 

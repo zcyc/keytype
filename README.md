@@ -123,7 +123,7 @@ Credentials are stored as two separate login Keychain items:
 - Metadata: `com.keytype.app.metadata`
 - Password: `com.keytype.app.password`
 
-The password is fetched only at the `{PASSWORD}` step. It is not stored in picker state, UserDefaults, SwiftData, logs, or the clipboard. KeyType has no network capability.
+When a sequence contains `{PASSWORD}`, the password is fetched during Auto-Type preparation, before focus returns to the target app. It is not stored in picker state, UserDefaults, SwiftData, logs, or the clipboard. KeyType has no network capability.
 
 Custom fields are stored with credential metadata in the login Keychain and are available to Auto-Type when their `{FIELD:NAME}` token is executed.
 

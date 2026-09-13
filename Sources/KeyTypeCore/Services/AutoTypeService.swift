@@ -22,6 +22,7 @@ public enum AutoTypeError: Error, LocalizedError, Sendable {
     case accessibilityRequired
     case targetUnavailable
     case targetChanged
+    case passwordUnavailable
     case missingField(String)
     case cancelled
 
@@ -31,6 +32,7 @@ public enum AutoTypeError: Error, LocalizedError, Sendable {
         case .accessibilityRequired: return "KeyType needs Accessibility access to type credentials."
         case .targetUnavailable: return "The original target application is no longer available."
         case .targetChanged: return "Auto-Type stopped because the active application changed."
+        case .passwordUnavailable: return "The credential password could not be prepared."
         case .missingField(let name): return "Custom field is not defined: \(name)"
         case .cancelled: return "Auto-Type was cancelled."
         }
@@ -96,6 +98,15 @@ public final class AutoTypeService {
             )
             try checkCancellation()
 
+            var password: String? = nil
+            if sequence.tokens.contains(where: { token in
+                if case .password = token { return true }
+                return false
+            }) {
+                // Read before returning focus so first-use Keychain authorization cannot interrupt typing.
+                password = try keychain.readPassword(id: credential.id)
+            }
+
             guard accessibility.activate(target) else { throw AutoTypeError.targetUnavailable }
             try await sleep(milliseconds: options.restoreFocusDelayMilliseconds)
             try verifyTarget(target)
@@ -107,11 +118,8 @@ public final class AutoTypeService {
                 case .username:
                     try await sender.send(text: credential.username, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
                 case .password:
-                    // Password is fetched only at this token; it never enters picker state or the clipboard.
-                    do {
-                        let password = try keychain.readPassword(id: credential.id)
-                        try await sender.send(text: password, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
-                    }
+                    guard let password else { throw AutoTypeError.passwordUnavailable }
+                    try await sender.send(text: password, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
                 case .field(let name):
                     guard let value = credential.customFields[name] else {
                         throw AutoTypeError.missingField(name)
