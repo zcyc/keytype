@@ -64,6 +64,7 @@ public final class AutoTypeService {
 
     public func cancel() {
         cancellationRequested = true
+        authentication.cancel()
     }
 
     public func execute(

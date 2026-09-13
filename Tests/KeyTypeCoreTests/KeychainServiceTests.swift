@@ -1,4 +1,5 @@
 import XCTest
+import Security
 @testable import KeyTypeCore
 
 final class KeychainServiceTests: XCTestCase {
@@ -46,5 +47,28 @@ final class KeychainServiceTests: XCTestCase {
         XCTAssertThrowsError(try service.readPassword(id: UUID())) { error in
             XCTAssertEqual(error as? KeychainError, .itemNotFound)
         }
+    }
+
+    func testUpdateRepairsMissingPasswordItem() throws {
+        let suffix = UUID().uuidString
+        let metadataService = "com.keytype.tests.metadata.\(suffix)"
+        let passwordService = "com.keytype.tests.password.\(suffix)"
+        let service = KeychainService(metadataService: metadataService, passwordService: passwordService)
+        let credential = CredentialMetadata(title: "test", username: "root")
+        defer { try? service.deleteCredential(id: credential.id) }
+
+        try service.saveCredential(credential, password: "old-secret")
+        let passwordQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: passwordService,
+            kSecAttrAccount as String: credential.id.uuidString
+        ]
+        XCTAssertEqual(SecItemDelete(passwordQuery as CFDictionary), errSecSuccess)
+
+        var updated = credential
+        updated.title = "updated"
+        try service.updateCredential(updated, password: "new-secret")
+
+        XCTAssertEqual(try service.readPassword(id: credential.id), "new-secret")
     }
 }

@@ -7,11 +7,12 @@ public struct CredentialMatcher: Sendable {
         var score = 0
         let title = target.windowTitle ?? ""
 
-        if !title.isEmpty && title == credential.title {
+        if !title.isEmpty && title.localizedCaseInsensitiveCompare(credential.title) == .orderedSame {
             score = max(score, 1_500)
         }
 
         for rule in credential.matchRules {
+            guard !rule.pattern.isEmpty else { continue }
             let value: String
             switch rule.type {
             case .windowTitle: value = target.windowTitle ?? ""

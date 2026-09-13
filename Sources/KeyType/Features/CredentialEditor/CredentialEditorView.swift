@@ -82,6 +82,7 @@ struct CredentialEditorView: View {
                         }
                         .buttonStyle(.borderless)
                         .help("Remove field")
+                        .accessibilityLabel("Remove field")
                     }
                 }
                 Button("Add Field") {

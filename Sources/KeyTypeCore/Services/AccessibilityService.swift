@@ -47,11 +47,22 @@ public final class AccessibilityService: Sendable {
     }
 
     public func activate(_ target: AutoTypeTarget) -> Bool {
-        guard let application = NSRunningApplication(processIdentifier: target.processIdentifier), !application.isTerminated else { return false }
+        guard let application = NSRunningApplication(processIdentifier: target.processIdentifier),
+              !application.isTerminated,
+              isSameApplication(application, as: target) else { return false }
         return application.activate(options: [.activateIgnoringOtherApps])
     }
 
     public func isFrontmost(_ target: AutoTypeTarget) -> Bool {
-        NSWorkspace.shared.frontmostApplication?.processIdentifier == target.processIdentifier
+        guard let application = NSWorkspace.shared.frontmostApplication else { return false }
+        return isSameApplication(application, as: target)
+    }
+
+    private func isSameApplication(_ application: NSRunningApplication, as target: AutoTypeTarget) -> Bool {
+        guard application.processIdentifier == target.processIdentifier else { return false }
+        if let bundleIdentifier = target.bundleIdentifier {
+            return application.bundleIdentifier == bundleIdentifier
+        }
+        return application.localizedName == target.applicationName
     }
 }

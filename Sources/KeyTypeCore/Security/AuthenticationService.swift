@@ -19,6 +19,7 @@ public enum AuthenticationError: Error, LocalizedError, Sendable {
 public final class AuthenticationService {
     public var gracePeriod: TimeInterval
     private var lastAuthenticatedAt: Date?
+    private var activeContext: LAContext?
 
     public init(gracePeriod: TimeInterval = 30) {
         self.gracePeriod = gracePeriod
@@ -33,6 +34,8 @@ public final class AuthenticationService {
         }
 
         let context = LAContext()
+        activeContext = context
+        defer { activeContext = nil }
         var availabilityError: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &availabilityError) else {
             throw AuthenticationError.unavailable(availabilityError?.localizedDescription ?? "No system authentication method is available.")
@@ -55,6 +58,10 @@ public final class AuthenticationService {
 
     public func lock() {
         lastAuthenticatedAt = nil
+    }
+
+    public func cancel() {
+        activeContext?.invalidate()
     }
 
     private func evaluate(context: LAContext, reason: String) async throws -> Bool {

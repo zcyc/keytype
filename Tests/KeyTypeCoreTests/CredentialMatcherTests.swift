@@ -41,6 +41,24 @@ final class CredentialMatcherTests: XCTestCase {
         XCTAssertGreaterThan(matcher.score(insensitive, for: target), 0)
     }
 
+    func testMatchesCredentialTitleWithoutCaseSensitivity() {
+        let target = AutoTypeTarget(processIdentifier: 1, bundleIdentifier: nil, applicationName: "Terminal", windowTitle: "Prod-DB-01")
+        let credential = CredentialMetadata(title: "prod-db-01", username: "root")
+
+        XCTAssertGreaterThanOrEqual(CredentialMatcher().score(credential, for: target), 1_500)
+    }
+
+    func testIgnoresEmptyMatchRules() {
+        let target = AutoTypeTarget(processIdentifier: 1, bundleIdentifier: nil, applicationName: "Terminal", windowTitle: nil)
+        let credential = CredentialMetadata(
+            title: "database",
+            username: "root",
+            matchRules: [MatchRule(type: .windowTitle, pattern: "")]
+        )
+
+        XCTAssertLessThan(CredentialMatcher().score(credential, for: target), 1_200)
+    }
+
     func testSearchesCustomFieldNamesAndValues() {
         let target = AutoTypeTarget(processIdentifier: 1, bundleIdentifier: nil, applicationName: "Terminal", windowTitle: nil)
         let credentials = [

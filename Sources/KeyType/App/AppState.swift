@@ -331,11 +331,11 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
         hotkeyService.stop()
         hotkeyService.resetHotkey()
         hotkey = hotkeyService.hotkey
-        _ = hotkeyService.start()
+        startHotkeyIfPossible()
     }
 
     func endHotkeyRecording() {
-        _ = hotkeyService.start()
+        startHotkeyIfPossible()
     }
 
     private func handleHotkey() {

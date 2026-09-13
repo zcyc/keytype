@@ -38,7 +38,12 @@ public final class KeychainService: Sendable {
 
         guard let password else { return }
         do {
-            try update(data: Data(password.utf8), service: passwordService, id: metadata.id)
+            do {
+                try update(data: Data(password.utf8), service: passwordService, id: metadata.id)
+            } catch KeychainError.itemNotFound {
+                // Repair credentials created with a missing password item.
+                try add(data: Data(password.utf8), service: passwordService, id: metadata.id)
+            }
         } catch {
             do {
                 try update(data: oldMetadataData, service: metadataService, id: metadata.id)
