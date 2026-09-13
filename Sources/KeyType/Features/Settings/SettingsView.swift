@@ -6,6 +6,7 @@ struct SettingsView: View {
     @ObservedObject var state: AppState
     @State private var isRecordingHotkey = false
     @State private var hotkeyError: String?
+    @State private var accessibilityTrusted = false
 
     var body: some View {
         Form {
@@ -17,6 +18,25 @@ struct SettingsView: View {
                         set: { state.setLaunchAtLogin($0) }
                     )
                 )
+            }
+
+            Section("Permissions") {
+                HStack(spacing: 8) {
+                    Image(systemName: accessibilityTrusted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                        .foregroundStyle(accessibilityTrusted ? .green : .orange)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Accessibility")
+                        Text(accessibilityTrusted ? "Granted" : "Required for Auto-Type")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if !accessibilityTrusted {
+                        Button("Open System Settings") {
+                            state.openAccessibilitySettings()
+                        }
+                    }
+                }
             }
 
             Section("Security") {
@@ -97,6 +117,16 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .task {
+            while !Task.isCancelled {
+                accessibilityTrusted = state.accessibility.isTrusted
+                do {
+                    try await Task.sleep(nanoseconds: 500_000_000)
+                } catch {
+                    break
+                }
+            }
+        }
         .onDisappear {
             if isRecordingHotkey {
                 isRecordingHotkey = false

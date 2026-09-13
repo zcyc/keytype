@@ -49,6 +49,7 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
     }
 
     var isAutoTyping: Bool { autoTypeTask != nil }
+    var isLocked: Bool { requireAuthentication && !authentication.isAuthenticated }
 
     override init() {
         keychain = KeychainService()
@@ -181,11 +182,26 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
         autoTypeTask?.cancel()
     }
 
+    func unlock() {
+        guard requireAuthentication else { return }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                try await authentication.authenticate(reason: "Unlock KeyType")
+                message = nil
+                objectWillChange.send()
+            } catch {
+                message = error.localizedDescription
+            }
+        }
+    }
+
     func lock() {
         cancelAutoType()
         authentication.lock()
         dismissPicker()
-        message = "KeyType is locked."
+        message = nil
+        objectWillChange.send()
     }
 
     func saveCredential(
@@ -308,6 +324,11 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
         UserDefaults.standard.set(seconds, forKey: "authenticationGracePeriod")
     }
 
+    func openAccessibilitySettings() {
+        _ = accessibility.requestPermissionPrompt()
+        accessibility.openSystemSettings()
+    }
+
     func updateCharacterDelay(_ milliseconds: Int) {
         characterDelayMilliseconds = max(0, min(milliseconds, 1_000))
         UserDefaults.standard.set(characterDelayMilliseconds, forKey: "characterDelayMilliseconds")
@@ -372,7 +393,7 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
                         options: options,
                         requireAuthentication: self.requireAuthentication
                     )
-                    self.message = "Auto-Type completed."
+                    self.message = nil
                 } catch {
                     self.message = error.localizedDescription
                 }

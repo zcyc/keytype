@@ -21,17 +21,18 @@ public final class AuthenticationService {
     private var lastAuthenticatedAt: Date?
     private var activeContext: LAContext?
 
+    public var isAuthenticated: Bool {
+        guard gracePeriod > 0, let lastAuthenticatedAt else { return false }
+        return Date().timeIntervalSince(lastAuthenticatedAt) < gracePeriod
+    }
+
     public init(gracePeriod: TimeInterval = 30) {
         self.gracePeriod = gracePeriod
     }
 
     public func authenticate(reason: String, required: Bool = true) async throws {
         guard required else { return }
-        if gracePeriod > 0,
-           let lastAuthenticatedAt,
-           Date().timeIntervalSince(lastAuthenticatedAt) < gracePeriod {
-            return
-        }
+        if isAuthenticated { return }
 
         let context = LAContext()
         activeContext = context

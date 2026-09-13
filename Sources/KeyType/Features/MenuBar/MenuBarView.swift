@@ -47,11 +47,17 @@ struct MenuBarView: View {
                 state.manageCredentials()
             }
             Divider()
-            MenuBarAction(
-                title: state.isAutoTyping ? "Cancel Auto-Type" : "Lock",
-                systemImage: state.isAutoTyping ? "xmark.circle" : "lock.fill"
-            ) {
-                state.isAutoTyping ? state.cancelAutoType() : state.lock()
+            if state.isAutoTyping {
+                MenuBarAction(title: "Cancel Auto-Type", systemImage: "xmark.circle") {
+                    state.cancelAutoType()
+                }
+            } else if state.requireAuthentication {
+                MenuBarAction(
+                    title: state.isLocked ? "Unlock" : "Lock",
+                    systemImage: state.isLocked ? "lock.open.fill" : "lock.fill"
+                ) {
+                    state.isLocked ? state.unlock() : state.lock()
+                }
             }
             MenuBarAction(title: "Settings", systemImage: "gearshape") {
                 state.openSettings()
