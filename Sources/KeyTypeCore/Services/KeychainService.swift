@@ -55,21 +55,20 @@ public final class KeychainService: Sendable {
     }
 
     public func deleteCredential(id: UUID) throws {
-        var firstError: Error?
-        var deletedCount = 0
-        // Remove the password first so a failed password deletion keeps metadata visible for retry.
-        for service in [passwordService, metadataService] {
-            do {
-                try delete(dataService: service, id: id)
-                deletedCount += 1
-            } catch KeychainError.itemNotFound {
-                continue
-            } catch {
-                firstError = firstError ?? error
-            }
+        var passwordDeleted = false
+        do {
+            try delete(dataService: passwordService, id: id)
+            passwordDeleted = true
+        } catch KeychainError.itemNotFound {
+            // Continue so metadata left by an interrupted deletion can still be removed.
         }
-        if let firstError {
-            throw deletedCount > 0 ? KeychainError.partialFailure : firstError
+
+        do {
+            try delete(dataService: metadataService, id: id)
+        } catch KeychainError.itemNotFound {
+            return
+        } catch {
+            throw passwordDeleted ? KeychainError.partialFailure : error
         }
     }
 
