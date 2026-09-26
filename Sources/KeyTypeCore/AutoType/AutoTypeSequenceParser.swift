@@ -6,6 +6,7 @@ public enum AutoTypeSequenceError: Error, Equatable, LocalizedError, Sendable {
     case duplicateField(String)
     case missingField(String)
     case invalidDelay(String)
+    case emptySequence
     case malformedSequence
 
     public var errorDescription: String? {
@@ -20,6 +21,8 @@ public enum AutoTypeSequenceError: Error, Equatable, LocalizedError, Sendable {
             return "Custom field is not defined: \(name)"
         case .invalidDelay(let value):
             return "Invalid delay: \(value). Use an integer from 0 to 30000 milliseconds."
+        case .emptySequence:
+            return "Auto-Type sequence cannot be empty."
         case .malformedSequence:
             return "Malformed auto-type sequence: a token is missing its closing brace."
         }
@@ -41,6 +44,8 @@ public struct AutoTypeSequenceParser: Sendable {
     }
 
     public func parse(_ input: String) throws -> AutoTypeSequence {
+        guard !input.isEmpty else { throw AutoTypeSequenceError.emptySequence }
+
         var tokens: [AutoTypeToken] = []
         var cursor = input.startIndex
 

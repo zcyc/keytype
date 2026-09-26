@@ -39,4 +39,10 @@ final class AutoTypeSequenceParserTests: XCTestCase {
             XCTAssertEqual(error as? AutoTypeSequenceError, .invalidFieldName("full name"))
         }
     }
+
+    func testRejectsEmptySequence() {
+        XCTAssertThrowsError(try parser.parse("")) { error in
+            XCTAssertEqual(error as? AutoTypeSequenceError, .emptySequence)
+        }
+    }
 }
