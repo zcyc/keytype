@@ -112,20 +112,21 @@ public final class AutoTypeService {
             try await sleep(milliseconds: options.restoreFocusDelayMilliseconds)
             try verifyTarget(target)
             state = .typing
+            let validateTarget: () throws -> Void = { try self.verifyTarget(target) }
 
             for token in sequence.tokens {
                 try verifyTarget(target)
                 switch token {
                 case .username:
-                    try await sender.send(text: credential.username, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
+                    try await sender.send(text: credential.username, characterDelayMilliseconds: options.characterDelayMilliseconds, validateTarget: validateTarget)
                 case .password:
                     guard let password else { throw AutoTypeError.passwordUnavailable }
-                    try await sender.send(text: password, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
+                    try await sender.send(text: password, characterDelayMilliseconds: options.characterDelayMilliseconds, validateTarget: validateTarget)
                 case .field(let name):
                     guard let value = credential.customFields[name] else {
                         throw AutoTypeError.missingField(name)
                     }
-                    try await sender.send(text: value, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
+                    try await sender.send(text: value, characterDelayMilliseconds: options.characterDelayMilliseconds, validateTarget: validateTarget)
                 case .tab:
                     try sender.press(.tab)
                 case .enter:
@@ -133,7 +134,7 @@ public final class AutoTypeService {
                 case .delay(let milliseconds):
                     try await sleep(milliseconds: milliseconds)
                 case .text(let text):
-                    try await sender.send(text: text, characterDelayMilliseconds: options.characterDelayMilliseconds, isCancelled: shouldCancel)
+                    try await sender.send(text: text, characterDelayMilliseconds: options.characterDelayMilliseconds, validateTarget: validateTarget)
                 }
             }
         } catch is CancellationError {

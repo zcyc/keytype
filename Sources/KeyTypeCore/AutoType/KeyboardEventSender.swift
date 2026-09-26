@@ -29,10 +29,11 @@ public final class KeyboardEventSender {
     public func send(
         text: String,
         characterDelayMilliseconds: Int,
-        isCancelled: @escaping () -> Bool
+        validateTarget: () throws -> Void
     ) async throws {
         for character in text {
-            guard !Task.isCancelled, !isCancelled() else { throw KeyboardEventError.cancelled }
+            try validateTarget()
+            guard !Task.isCancelled else { throw KeyboardEventError.cancelled }
             try sendUnicode(String(character))
             if characterDelayMilliseconds > 0 {
                 try await Task.sleep(nanoseconds: UInt64(characterDelayMilliseconds) * 1_000_000)
