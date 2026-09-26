@@ -31,7 +31,7 @@ public enum AutoTypeError: Error, LocalizedError, Sendable {
         case .alreadyRunning: return "Auto-Type is already running."
         case .accessibilityRequired: return "KeyType needs Accessibility access to type credentials."
         case .targetUnavailable: return "The original target application is no longer available."
-        case .targetChanged: return "Auto-Type stopped because the active application changed."
+        case .targetChanged: return "Auto-Type stopped because the target window or application changed."
         case .passwordUnavailable: return "The credential password could not be prepared."
         case .missingField(let name): return "Custom field is not defined: \(name)"
         case .cancelled: return "Auto-Type was cancelled."

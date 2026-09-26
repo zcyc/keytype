@@ -74,7 +74,7 @@ When the picker opens, KeyType captures the current frontmost application and wi
 
 The search field filters by credential title or username. It does not hide the other saved credentials when no search text is entered, so multiple candidates can be reviewed manually. Use ↑/↓ to select a row, Return to confirm, or Escape to cancel.
 
-Before typing, KeyType verifies that the original target application is still frontmost. If focus changed, Auto-Type stops instead of typing into the wrong application.
+Before typing, KeyType verifies that the original target application and focused window are still active when macOS exposes the window. If focus changed, Auto-Type stops instead of typing into the wrong destination.
 
 ## Auto-Type sequences
 

@@ -25,24 +25,22 @@ public final class AccessibilityService: Sendable {
             return nil
         }
 
-        var windowValue: CFTypeRef?
-        let axApplication = AXUIElementCreateApplication(application.processIdentifier)
-        let windowStatus = AXUIElementCopyAttributeValue(axApplication, kAXFocusedWindowAttribute as CFString, &windowValue)
-        var windowTitle: String?
-        if windowStatus == .success,
-           let windowValue,
-           CFGetTypeID(windowValue) == AXUIElementGetTypeID() {
-            let window = unsafeBitCast(windowValue, to: AXUIElement.self)
+        let window = focusedWindow(of: application.processIdentifier)
+        let windowTitle: String?
+        if let window {
             var titleValue: CFTypeRef?
             let titleStatus = AXUIElementCopyAttributeValue(window, kAXTitleAttribute as CFString, &titleValue)
-            if titleStatus == .success { windowTitle = titleValue as? String }
+            windowTitle = titleStatus == .success ? titleValue as? String : nil
+        } else {
+            windowTitle = nil
         }
 
         return AutoTypeTarget(
             processIdentifier: application.processIdentifier,
             bundleIdentifier: application.bundleIdentifier,
             applicationName: application.localizedName ?? application.bundleIdentifier ?? "Unknown Application",
-            windowTitle: windowTitle
+            windowTitle: windowTitle,
+            windowElement: window
         )
     }
 
@@ -54,8 +52,20 @@ public final class AccessibilityService: Sendable {
     }
 
     public func isFrontmost(_ target: AutoTypeTarget) -> Bool {
-        guard let application = NSWorkspace.shared.frontmostApplication else { return false }
-        return isSameApplication(application, as: target)
+        guard let application = NSWorkspace.shared.frontmostApplication,
+              isSameApplication(application, as: target) else { return false }
+        guard let targetWindow = target.windowElement else { return true }
+        guard let focusedWindow = focusedWindow(of: target.processIdentifier) else { return false }
+        return CFEqual(targetWindow, focusedWindow)
+    }
+
+    private func focusedWindow(of processIdentifier: pid_t) -> AXUIElement? {
+        var windowValue: CFTypeRef?
+        let application = AXUIElementCreateApplication(processIdentifier)
+        guard AXUIElementCopyAttributeValue(application, kAXFocusedWindowAttribute as CFString, &windowValue) == .success,
+              let windowValue,
+              CFGetTypeID(windowValue) == AXUIElementGetTypeID() else { return nil }
+        return unsafeBitCast(windowValue, to: AXUIElement.self)
     }
 
     private func isSameApplication(_ application: NSRunningApplication, as target: AutoTypeTarget) -> Bool {
