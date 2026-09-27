@@ -72,7 +72,7 @@ When editing an existing credential, leave the password field empty to keep the 
 
 When the picker opens, KeyType captures the current frontmost application and window title when macOS makes that information available. It then ranks credentials using the target window, the optional window-title rule, and the credential title.
 
-The search field filters by credential title or username. It does not hide the other saved credentials when no search text is entered, so multiple candidates can be reviewed manually. Use ↑/↓ to select a row, Return to confirm, or Escape to cancel.
+The search field filters by credential title, username, and custom field names or values. It does not hide the other saved credentials when no search text is entered, so multiple candidates can be reviewed manually. Use ↑/↓ to select a row, Return to confirm, or Escape to cancel.
 
 Before typing, KeyType verifies that the original target application and focused window are still active when macOS exposes the window. If focus changed, Auto-Type stops instead of typing into the wrong destination.
 

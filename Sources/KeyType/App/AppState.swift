@@ -94,6 +94,7 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
             credentials = try keychain.listCredentials().sorted {
                 $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
             }
+            ensurePickerSelection()
         } catch {
             message = error.localizedDescription
         }
@@ -254,6 +255,7 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
             message = "Credential saved."
             closeCurrentWindow()
         } catch {
+            reloadCredentials()
             showError(error.localizedDescription)
         }
     }
@@ -296,6 +298,7 @@ final class AppState: NSObject, ObservableObject, NSWindowDelegate {
             reloadCredentials()
             message = "Credential deleted."
         } catch {
+            reloadCredentials()
             showError(error.localizedDescription)
         }
     }

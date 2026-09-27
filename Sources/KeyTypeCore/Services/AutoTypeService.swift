@@ -48,6 +48,7 @@ public final class AutoTypeService {
     private let accessibility: AccessibilityService
     private let sender: KeyboardEventSender
     private var cancellationRequested = false
+    private var authenticationRequestID: UUID?
     private var escapeMonitor: Any?
 
     public init(
@@ -64,7 +65,9 @@ public final class AutoTypeService {
 
     public func cancel() {
         cancellationRequested = true
-        authentication.cancel()
+        if let authenticationRequestID {
+            authentication.cancel(requestID: authenticationRequestID)
+        }
     }
 
     public func execute(
@@ -93,10 +96,7 @@ public final class AutoTypeService {
         do {
             try checkCancellation()
             guard accessibility.isTrusted else { throw AutoTypeError.accessibilityRequired }
-            try await authentication.authenticate(
-                reason: "Authenticate to Auto-Type this credential",
-                required: requireAuthentication
-            )
+            try await authenticate(requireAuthentication: requireAuthentication)
             try checkCancellation()
 
             var password: String? = nil
@@ -150,6 +150,17 @@ public final class AutoTypeService {
 
     private func checkCancellation() throws {
         guard !shouldCancel() else { throw AutoTypeError.cancelled }
+    }
+
+    private func authenticate(requireAuthentication: Bool) async throws {
+        let requestID = UUID()
+        authenticationRequestID = requestID
+        defer { authenticationRequestID = nil }
+        try await authentication.authenticate(
+            reason: "Authenticate to Auto-Type this credential",
+            required: requireAuthentication,
+            requestID: requestID
+        )
     }
 
     private func verifyTarget(_ target: AutoTypeTarget) throws {

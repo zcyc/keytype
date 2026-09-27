@@ -22,6 +22,7 @@ public final class AuthenticationService {
     public var gracePeriod: TimeInterval
     private var lastAuthenticatedAt: Date?
     private var activeContext: LAContext?
+    private var activeRequestID: UUID?
     private var authenticationGeneration = 0
 
     public var isAuthenticated: Bool {
@@ -34,6 +35,10 @@ public final class AuthenticationService {
     }
 
     public func authenticate(reason: String, required: Bool = true) async throws {
+        try await authenticate(reason: reason, required: required, requestID: nil)
+    }
+
+    func authenticate(reason: String, required: Bool, requestID: UUID?) async throws {
         guard required else { return }
         if isAuthenticated { return }
         guard activeContext == nil else { throw AuthenticationError.alreadyInProgress }
@@ -42,8 +47,12 @@ public final class AuthenticationService {
         // Ignore a prompt result if lock or cancel occurs while authentication is suspended.
         let generation = authenticationGeneration
         activeContext = context
+        activeRequestID = requestID
         defer {
-            if activeContext === context { activeContext = nil }
+            if activeContext === context {
+                activeContext = nil
+                activeRequestID = nil
+            }
         }
         var availabilityError: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &availabilityError) else {
@@ -77,7 +86,13 @@ public final class AuthenticationService {
         authenticationGeneration += 1
         let context = activeContext
         activeContext = nil
+        activeRequestID = nil
         context?.invalidate()
+    }
+
+    func cancel(requestID: UUID) {
+        guard activeRequestID == requestID else { return }
+        cancel()
     }
 
     private func evaluate(context: LAContext, reason: String) async throws -> Bool {
